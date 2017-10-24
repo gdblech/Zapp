@@ -30,6 +30,7 @@ class Profile {
         lastName = lName;
         email = eml;
         location = new Location("Greensboro", "North Carolina");
+        reviews = new ReviewList(uname);
 
         //todo add review linked list finder/loader
         //todo add location finder/loader

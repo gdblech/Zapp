@@ -1,1 +1,4 @@
 text
+provider
+rating
+reviewID

@@ -12,14 +12,11 @@ import java.util.Iterator;
 
 
 public class UserMain extends Application{
-    private Scene startScene, signUpScene, signInScene, newProfileScene, viewProfileScene, editProfileScene;
+    private Scene startScene, signUpScene, signInScene, newProfileScene, viewProfileScene, editProfileScene, reviewsScene;
     final int WIDTH = 800;
     final int HEIGHT = 500;
 
     public static void Usermain(String[] args) {
-////        ArrayList<Profile> profiles = Profile.readAccounts();
-////        profiles.get(0).setFirstName("RickyRick");
-////        Profile.writeAccounts(profiles);
         launch(args);
     }
 
@@ -123,6 +120,7 @@ public class UserMain extends Application{
             stateEP.setText("North Carolina");
             primaryStage.setScene(editProfileScene);
         });
+        searchVP.setOnAction(e -> primaryStage.setScene(reviewsScene));
 
         // editProfile parts2
         //Buttons
@@ -158,6 +156,11 @@ public class UserMain extends Application{
             labelVP5.setText("Location: " + user.getLocation());
             primaryStage.setScene(viewProfileScene);
         });
+
+        //reviews scene parts
+        //labels
+        Label labelRS1 = new Label("Rating: ");
+        Label labelRS2 = new Label();
 
         //populates the startScene
         HBox layout = new HBox(100);

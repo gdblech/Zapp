@@ -9,11 +9,10 @@ import java.util.StringTokenizer;
 
 public class ReviewList{
     ArrayList<Review> reviews;
-    String user;
 
     ReviewList(String user){
-        reviews = new ArrayList<>();
-        this.user = user;
+        reviews = readReviews(user);
+
     }
 
     void addReview( String text, String provider, int rating){
@@ -24,57 +23,55 @@ public class ReviewList{
         reviews.remove(reviewID);
     }
 
-    static ArrayList readRewviews() {
+    private static ArrayList readReviews(String user) {
         ArrayList<Review> reviews = new ArrayList<>();
-        String fileName = "User\\reviews.txt";
+        String fileName = "User\\reviews_" + user +".txt";
         try {
             FileReader fin = new FileReader(fileName);
             Scanner reviewFile = new Scanner(fin);
 
-            String line;
-            while (reviewFile.hasNextLine()) {
-                line = reviewFile.nextLine();
-                StringTokenizer st = new StringTokenizer(line);
 
-                try {
-                    if (st.countTokens() != 5) {
-                        System.err.println("Skipping ill-formatted line " + line);
-                        continue;
-                    }
-                    String text  = st.nextToken();
-                    String provider = st.nextToken();
-                    int rating = Integer.parseInt(st.nextToken());
-                    int reviewID = Integer.parseInt(st.nextToken());
-                    Review rfile = new Review(text, provider, rating, reviewID);
-                    reviews.add(rfile);
-                } catch (NumberFormatException e) {
-                    System.err.println("Skipping ill-formatted line " + line);
-                }
+            while (reviewFile.hasNextLine()) {
+                String text  =  reviewFile.nextLine();
+                String provider =  reviewFile.nextLine();
+                int rating = Integer.parseInt( reviewFile.nextLine());
+                int reviewID = Integer.parseInt( reviewFile.nextLine());
+                Review rfile = new Review(text, provider, rating, reviewID);
+                reviews.add(rfile);
+
             }
         }catch (IOException e) {
-            System.err.println(e);
-            return null;
+            try {
+                new FileWriter("User\\reviews_" + user + ".txt");
+            } catch(IOException e2){
+                System.out.println(e2);
+                return null;
+            }
+            return  reviews;
         }
         return reviews;
     }
     //todo:
-//    static int writeRewviews(ArrayList<Profile>  prof){
-//        try{
-//            FileWriter fout = new FileWriter("User\\profiles.txt");
-//            Iterator<Profile> iter = prof.iterator();
-//            while(iter.hasNext()){
-//                Profile pro = iter.next();
-//                fout.write(pro.getWriterOut());
-//            }
-//            fout.flush();
-//            fout.close();
-//            return 0;
-//        }catch(IOException e) {
-//            System.err.println(e);
-//            return 1;
-//        }
-//
-//    }
+    static int writeRewviews(ArrayList<Review>  reviews, String user){
+        try{
+            FileWriter fout = new FileWriter("User\\reviews_" + user + ".txt");
+            Iterator<Review> iter = reviews.iterator();
+            while(iter.hasNext()){
+                Review rev = iter.next();
+                fout.write(rev.getText() + "\n");
+                fout.write(rev.getProvider() + "\n");
+                fout.write(rev.getRating() + "\n");
+                fout.write(rev.getReviewID() + "\n");
+            }
+            fout.flush();
+            fout.close();
+            return 0;
+        }catch(IOException e) {
+            System.err.println(e);
+            return 1;
+        }
+
+    }
 
 }
 
