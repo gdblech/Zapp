@@ -1,6 +1,6 @@
 import java.util.LinkedList;
 
-public class Profile {
+class Profile {
     /* private attributes:
     firstName: string
     lastName: string
