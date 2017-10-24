@@ -1,6 +1,4 @@
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,10 +16,10 @@ public class UserMain extends Application{
     final int WIDTH = 800;
     final int HEIGHT = 500;
 
-    public static void main(String[] args) {
-//        ArrayList<Profile> profiles = Profile.readAccounts();
-//        profiles.get(0).setFirstName("RickyRick");
-//        Profile.writeAccounts(profiles);
+    public static void Usermain(String[] args) {
+////        ArrayList<Profile> profiles = Profile.readAccounts();
+////        profiles.get(0).setFirstName("RickyRick");
+////        Profile.writeAccounts(profiles);
         launch(args);
     }
 
