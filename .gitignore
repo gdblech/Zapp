@@ -71,9 +71,3 @@ Temporary Items
 .directory
 .Trash-*
 .nfs*
-
-# User-specific stuff:
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/dictionaries
-out/

@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.HashMap;
 
 
 public class UserMain extends Application{
@@ -37,19 +38,8 @@ public class UserMain extends Application{
 
         // editProfile parts
         //Labels
-        Label labelEP1 = new Label("Enter your New First Name:");
-        Label labelEP2 = new Label("Enter your New Last Name:");
-        Label labelEP3 = new Label("Enter your New Email Address:");
-        Label labelEP4 = new Label("Enter your New City");
-        Label labelEP5 = new Label("Enter your New State");
-        //Text Fields
-        TextField fNameEP = new TextField(user.getFirstName());
-        TextField lNameEP = new TextField(user.getLastName());
-        TextField emailEP = new TextField(user.getEmail());
-        TextField cityEP = new TextField("Greensboro");
-        TextField stateEP = new TextField("North Carolina");
-        cityEP.setEditable(false);
-        stateEP.setEditable(false);
+        Label[] labelsEP = labelFillEP();
+        TextField[] textFieldsEP = textFieldFillEP(user);
 
         //New Profile Parts
         //Labels
@@ -99,7 +89,20 @@ public class UserMain extends Application{
         Button enterSI = new Button("Enter");
         //button events
         backSI.setOnAction(e -> primaryStage.setScene(startScene));
-        enterSI.setOnAction(e-> primaryStage.setScene(viewProfileScene));
+        enterSI.setOnAction(e-> {
+            user.setProfile(checkAccount(userSI.getText(), passSI.getText(), profiles));
+            if(user.getProfile() == null){
+            }else{
+                textFieldsEP[0].setText(user.getFirstName());
+                textFieldsEP[1].setText(user.getLastName());
+                textFieldsEP[2].setText(user.getEmail());
+                textFieldsEP[3].setText("Greensboro");
+                textFieldsEP[4].setText("North Carolina");
+
+                primaryStage.setScene(viewProfileScene);
+            }
+
+        });
 
         //Profile View Parts
         //Labels
@@ -113,11 +116,11 @@ public class UserMain extends Application{
         Button searchVP = new Button("Search");
         //Button Events
         editVP.setOnAction(e -> {
-            fNameEP.setText(user.getFirstName());
-            lNameEP.setText(user.getLastName());
-            emailEP.setText(user.getEmail());
-            cityEP.setText("Greensboro");
-            stateEP.setText("North Carolina");
+            textFieldsEP[0].setText(user.getFirstName());
+            textFieldsEP[1].setText(user.getLastName());
+            textFieldsEP[2].setText(user.getEmail());
+            textFieldsEP[3].setText("Greensboro");
+            textFieldsEP[4].setText("North Carolina");
             primaryStage.setScene(editProfileScene);
         });
         searchVP.setOnAction(e -> primaryStage.setScene(reviewsScene));
@@ -148,7 +151,7 @@ public class UserMain extends Application{
         Button enterEP = new Button("Enter");
         //Button Events
         enterEP.setOnAction(e -> {
-            editProfile(fNameEP.getText(), lNameEP.getText(), emailEP.getText(), user.getProfile());
+            editProfile(textFieldsEP[0].getText(), textFieldsEP[1].getText(), textFieldsEP[2].getText(), user.getProfile());
             labelVP1.setText("Welcome, " + user.getUsername());
             labelVP2.setText("Your First Name: " + user.getFirstName());
             labelVP3.setText("Your Last Name: "+ user.getLastName());
@@ -179,7 +182,8 @@ public class UserMain extends Application{
 
         //populates the newProfileScene
         VBox layoutNP = new VBox(20);
-        layoutNP.getChildren().addAll(labelNP1, fNameNP, labelNP2, lNameNP, labelNP3, emailNP, labelNP4, cityNP, labelNP5, stateNP, enterNP);
+        layoutNP.getChildren().addAll(labelNP1, fNameNP, labelNP2, lNameNP, labelNP3, emailNP, labelNP4, cityNP,
+                labelNP5, stateNP, enterNP);
         newProfileScene = new Scene(layoutNP, WIDTH, HEIGHT);
 
         //populates the viewProfileScene
@@ -189,10 +193,12 @@ public class UserMain extends Application{
 
         //populates the editProfileScene
         VBox layoutEP = new VBox(20);
-        layoutEP.getChildren().addAll(labelEP1, fNameEP, labelEP2, lNameEP, labelEP3, emailEP, labelEP4, cityEP, labelEP5, stateEP, enterEP);
+        for(int i = 0; i < labelsEP.length; i++){
+            layoutEP.getChildren().add(labelsEP[i]);
+            layoutEP.getChildren().add(textFieldsEP[i]);
+        }
+        layoutEP.getChildren().add(enterEP);
         editProfileScene = new Scene(layoutEP, WIDTH, HEIGHT);
-
-
 
         //primary
         primaryStage.setScene(startScene);
@@ -202,6 +208,8 @@ public class UserMain extends Application{
             System.exit(0);
         });
         primaryStage.show();
+
+
     }
     //set user
 
@@ -250,9 +258,35 @@ public class UserMain extends Application{
         Profile profile = new Profile(username, password, firstName, lastName, email);
         return profile;
     }
-    //prepsfor shutdown by saving user profiles
+    //preps for shutdown by saving user profiles
     private void shutDown(ArrayList<Profile> profiles){
         Profile.writeAccounts(profiles);
+    }
+
+    //fills labels array for edit profile stage
+    private Label[] labelFillEP(){
+        Label[] labels = new Label[5];
+        labels[0] = new Label("Enter your New First Name:");
+        labels[1] = new Label("Enter your New Last Name:");
+        labels[2] = new Label("Enter your New Email Address:");
+        labels[3] = new Label("Enter your New City");
+        labels[4] = new Label("Enter your New State");
+        return labels;
+    }
+
+    //fills textfield array for edit profile stage
+    private TextField[] textFieldFillEP(ProfileWrapper user){
+        TextField[] textFields = new TextField[5];
+        textFields[0] = new TextField(user.getFirstName());
+        textFields[1] = new TextField(user.getLastName());
+        textFields[2] = new TextField(user.getEmail());
+        textFields[3] = new TextField("Greensboro");
+        textFields[4] = new TextField("North Carolina");
+        //Text Fields
+        textFields[3].setEditable(false);
+        textFields[4].setEditable(false);
+
+        return textFields;
     }
 
 }

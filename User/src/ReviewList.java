@@ -11,7 +11,7 @@ public class ReviewList{
     ArrayList<Review> reviews;
 
     ReviewList(String user){
-        reviews = readReviews(user);
+        //todo reviews = readReviews(user);
 
     }
 
@@ -23,55 +23,55 @@ public class ReviewList{
         reviews.remove(reviewID);
     }
 
-    private static ArrayList readReviews(String user) {
-        ArrayList<Review> reviews = new ArrayList<>();
-        String fileName = "User\\reviews_" + user +".txt";
-        try {
-            FileReader fin = new FileReader(fileName);
-            Scanner reviewFile = new Scanner(fin);
-
-
-            while (reviewFile.hasNextLine()) {
-                String text  =  reviewFile.nextLine();
-                String provider =  reviewFile.nextLine();
-                int rating = Integer.parseInt( reviewFile.nextLine());
-                int reviewID = Integer.parseInt( reviewFile.nextLine());
-                Review rfile = new Review(text, provider, rating, reviewID);
-                reviews.add(rfile);
-
-            }
-        }catch (IOException e) {
-            try {
-                new FileWriter("User\\reviews_" + user + ".txt");
-            } catch(IOException e2){
-                System.out.println(e2);
-                return null;
-            }
-            return  reviews;
-        }
-        return reviews;
-    }
+//    private static ArrayList readReviews(String user) {
+//        ArrayList<Review> reviews = new ArrayList<>();
+//        String fileName = "User\\reviews_" + user +".txt";
+//        try {
+//            FileReader fin = new FileReader(fileName);
+//            Scanner reviewFile = new Scanner(fin);
+//
+//
+//            while (reviewFile.hasNextLine()) {
+//                String text  =  reviewFile.nextLine();
+//                String provider =  reviewFile.nextLine();
+//                int rating = Integer.parseInt( reviewFile.nextLine());
+//                int reviewID = Integer.parseInt( reviewFile.nextLine());
+//                Review rfile = new Review(text, provider, rating, reviewID);
+//                reviews.add(rfile);
+//
+//            }
+//        }catch (IOException e) {
+//            try {
+//                new FileWriter("User\\reviews_" + user + ".txt");
+//            } catch(IOException e2){
+//                System.out.println(e2);
+//                return null;
+//            }
+//            return  reviews;
+//        }
+//        return reviews;
+//    }
     //todo:
-    static int writeRewviews(ArrayList<Review>  reviews, String user){
-        try{
-            FileWriter fout = new FileWriter("User\\reviews_" + user + ".txt");
-            Iterator<Review> iter = reviews.iterator();
-            while(iter.hasNext()){
-                Review rev = iter.next();
-                fout.write(rev.getText() + "\n");
-                fout.write(rev.getProvider() + "\n");
-                fout.write(rev.getRating() + "\n");
-                fout.write(rev.getReviewID() + "\n");
-            }
-            fout.flush();
-            fout.close();
-            return 0;
-        }catch(IOException e) {
-            System.err.println(e);
-            return 1;
-        }
-
-    }
+//    static int writeRewviews(ArrayList<Review>  reviews, String user){
+//        try{
+//            FileWriter fout = new FileWriter("User\\reviews_" + user + ".txt");
+//            Iterator<Review> iter = reviews.iterator();
+//            while(iter.hasNext()){
+//                Review rev = iter.next();
+//                fout.write(rev.getText() + "\n");
+//                fout.write(rev.getProvider() + "\n");
+//                fout.write(rev.getRating() + "\n");
+//                fout.write(rev.getReviewID() + "\n");
+//            }
+//            fout.flush();
+//            fout.close();
+//            return 0;
+//        }catch(IOException e) {
+//            System.err.println(e);
+//            return 1;
+//        }
+//
+//    }
 
 }
 

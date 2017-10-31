@@ -21,6 +21,7 @@ class Profile {
     private String email;
     private ReviewList reviews;
     private Location location;
+    private boolean ban; // false is default
 
     //constructor
     Profile(String uname, String pass, String fName, String lName,  String eml){
@@ -31,6 +32,7 @@ class Profile {
         email = eml;
         location = new Location("Greensboro", "North Carolina");
         reviews = new ReviewList(uname);
+        ban = false;
 
         //todo add review linked list finder/loader
         //todo add location finder/loader
