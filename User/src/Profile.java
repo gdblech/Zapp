@@ -1,5 +1,3 @@
-import jdk.nashorn.internal.ir.ReturnNode;
-
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -24,14 +22,14 @@ class Profile {
     private boolean ban; // false is default
 
     //constructor
-    Profile(String uname, String pass, String fName, String lName,  String eml){
-        username = uname;
-        password = pass;
-        firstName = fName;
-        lastName = lName;
-        email = eml;
-        location = new Location("Greensboro", "North Carolina");
-        reviews = new ReviewList(uname);
+    Profile(String username, String password, String firstName, String lastName,  String email){
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.location = new Location("Greensboro", "North Carolina");
+        //this.reviews = new ReviewList(uname);
         ban = false;
 
         //todo add review linked list finder/loader
@@ -94,6 +92,7 @@ class Profile {
         return firstName + lastName;
     }
 
+    //old writer and reader
     static ArrayList readAccounts() {
         ArrayList<Profile> userAccounts = new ArrayList<>();
         String fileName = "User\\profiles.txt";
@@ -129,7 +128,7 @@ class Profile {
         }
         return userAccounts;
     }
-    static int writeAccounts(ArrayList<Profile>  prof){
+    static void writeAccounts(ArrayList<Profile>  prof){
         try{
             FileWriter fout = new FileWriter("User\\profiles.txt");
             Iterator<Profile> iter = prof.iterator();
@@ -139,12 +138,21 @@ class Profile {
             }
             fout.flush();
             fout.close();
-            return 0;
         }catch(IOException e) {
             System.err.println(e);
-            return 1;
         }
 
+    }
+
+    //xml writer and reader
+    static HashMap<String, Profile> readAccountsXML(){
+        HashMap<String, Profile> userAccounts = new HashMap<>();
+
+
+
+
+
+        return userAccounts;
     }
 }
 
