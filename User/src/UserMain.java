@@ -14,8 +14,6 @@ import java.util.Iterator;
 
 public class UserMain extends Application{
     private Scene startScene, signUpScene, signInScene, newProfileScene, viewProfileScene, editProfileScene, reviewsScene;
-    final int WIDTH = 800;
-    final int HEIGHT = 500;
 
     public static void Usermain(String[] args) {
         launch(args);
@@ -23,8 +21,10 @@ public class UserMain extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ArrayList<Profile> profiles = Profile.readAccounts();
+        ArrayList profiles = Profile.readAccounts();
         ProfileWrapper user = new ProfileWrapper();
+        final int WIDTH = 800;
+        final int HEIGHT = 500;
 
         //labels
         Label[] labelsST, labelsSU, labelsSI, labelsVP, labelsEP, labelsNP, labelsRS;
@@ -61,36 +61,34 @@ public class UserMain extends Application{
         //Edit profile TextFields
         textFieldsEP = textFieldFillEP(user);
 
-
-        //start parts
-        //buttons
+        //Buttons
+        //Start Scene Buttons
         Button signUp = new Button("Sign Up");
         Button signIn = new Button("Sign In");
-        //button actions
-        signUp.setOnAction(e -> primaryStage.setScene(signUpScene));
-        signIn.setOnAction(e -> primaryStage.setScene(signInScene));
-
-        // editProfile parts
-
-
-        //New Profile Parts
-
-        //Sign Up parts
-        //buttons
+        //Sign up buttons
         Button backSU = new Button("Back");
         Button enterSU = new Button("Enter");
-        //buttonActions
+        //Sign in buttons
+        Button backSI = new Button("Back");
+        Button enterSI = new Button("Enter");
+        //Profile View Buttons
+        Button editVP = new Button("Edit");
+        Button searchVP = new Button("Search");
+        //new profile Buttons
+        Button enterNP = new Button("Enter");
+        //edit profile Buttons
+        Button enterEP = new Button("Enter");
+
+        //Start scene button events
+        signUp.setOnAction(e -> primaryStage.setScene(signUpScene));
+        signIn.setOnAction(e -> primaryStage.setScene(signInScene));
+        //Sign Up button events
         backSU.setOnAction(e -> primaryStage.setScene(startScene));
         enterSU.setOnAction(e-> {
             //todo replace with try block
             primaryStage.setScene(newProfileScene);
         });
-
-        //Sign in parts
-        //buttons
-        Button backSI = new Button("Back");
-        Button enterSI = new Button("Enter");
-        //button events
+        //sing in button events
         backSI.setOnAction(e -> primaryStage.setScene(startScene));
         enterSI.setOnAction(e-> {
             user.setProfile(checkAccount(userSI.getText(), passSI.getText(), profiles));
@@ -99,27 +97,17 @@ public class UserMain extends Application{
                 UpdateVP(labelsVP, user.getProfile());
                 primaryStage.setScene(viewProfileScene);
             }
-
         });
-
-        //Profile View Parts
-        //Buttons
-        Button editVP = new Button("Edit");
-        Button searchVP = new Button("Search");
-        //Button Events
+        //profile view Button Events
         editVP.setOnAction(e -> {
             UpdateEP(textFieldsEP, user.getProfile());
             primaryStage.setScene(editProfileScene);
         });
         searchVP.setOnAction(e -> primaryStage.setScene(reviewsScene));
-
-        //Buttons
-        Button enterNP = new Button("Enter");
-        //Button Events
+        //new profile Button Events
         enterNP.setOnAction(e -> {
             Profile nUser = createProfile(userSU.getText(), passSU1.getText(), textFieldsNP[0].getText(),
                     textFieldsNP[1].getText(), textFieldsNP[2].getText());
-
             if(nUser != null){
                 profiles.add(nUser);
                 user.setProfile(nUser);
@@ -127,10 +115,7 @@ public class UserMain extends Application{
                 primaryStage.setScene(viewProfileScene);
             }
         });
-
-        //Buttons
-        Button enterEP = new Button("Enter");
-        //Button Events
+        //edit profile Button Events
         enterEP.setOnAction(e -> {
             editProfile(textFieldsEP[0].getText(), textFieldsEP[1].getText(), textFieldsEP[2].getText(), user.getProfile());
             UpdateVP(labelsVP, user.getProfile());
@@ -191,33 +176,23 @@ public class UserMain extends Application{
 
     //checks for matching password
     private boolean checkPassword(String password1, String password2){
-        if(password1.equals(password2)){
-            return true;
-        }else{
-            return false;
-        }
+        return password1.equals(password2);
     }
-    //checks if email is correct format
+    //checks if email is in correct format
     private boolean checkEmail(String email){
         //todo add regex for email checking
         return true;
     }
-    //checks if usernames match
+    //checks if user names match
     private boolean checkUsername(String username1, String username2){
-        if(username1.equalsIgnoreCase(username2)){
-            return true;
-        }else{
-            return false;
-        }
+        return username1.equalsIgnoreCase(username2);
     }
 
-    //checks if an account exists
+    //checks if an account credentials match an existing account
     private Profile checkAccount(String username, String password, ArrayList<Profile> profiles){
         //todo add try, catch & exception block.
-        Iterator<Profile> iter = profiles.iterator();
-        while(iter.hasNext()){
-            Profile prof = iter.next();
-            if(checkUsername(prof.getUsername(), username) && checkPassword(prof.getPassword(), password)){
+        for (Profile prof : profiles) {
+            if (checkUsername(prof.getUsername(), username) && checkPassword(prof.getPassword(), password)) {
                 return prof;
             }
         }
@@ -231,9 +206,10 @@ public class UserMain extends Application{
     }
     //creates a new profile
     private Profile createProfile(String username, String password, String firstName, String lastName, String email){
-        Profile profile = new Profile(username, password, firstName, lastName, email);
-        return profile;
+        return new Profile(username, password, firstName, lastName, email);
+        //todo investigate why this is here.
     }
+
     //preps for shutdown by saving user profiles
     private void shutDown(ArrayList<Profile> profiles){
         Profile.writeAccounts(profiles);
@@ -277,9 +253,9 @@ public class UserMain extends Application{
         return labels;
     }
     private Label[] labelFillRS(){
-        Label[] labels = new Label[2];
+        //Label[] labels = new Label[2];
         //todo add labels
-        return labels;
+        return null;
     }
     private Label[] labelFillEP(){
         Label[] labels = new Label[5];
@@ -332,6 +308,4 @@ public class UserMain extends Application{
         labels[3].setText("Your Email Address: " + user.getEmail());
         labels[4].setText("Location: " + user.getLocation());
     }
-
 }
-

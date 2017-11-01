@@ -7,7 +7,7 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 
-public class ReviewList{
+class ReviewList{
     ArrayList<Review> reviews;
 
     ReviewList(String user){
