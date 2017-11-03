@@ -1,8 +1,13 @@
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.File;
 
+@XmlRootElement
 class Profile {
     /* private attributes:
     firstName: string
@@ -18,17 +23,43 @@ class Profile {
     private String lastName;
     private String email;
     private ReviewList reviews;
-    private Location location;
+    private String city;
+    private String state;
     private boolean ban; // false is default
 
     //constructor
+    Profile(){
+        username = null;
+        password = null;
+        firstName = null;
+        lastName = null;
+        email = null;
+        ban = true;
+        city = null;
+        state = null;
+    }
     Profile(String username, String password, String firstName, String lastName,  String email){
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.location = new Location("Greensboro", "North Carolina");
+        city = "greensboro";
+        state = "North Carolina";
+        //this.reviews = new ReviewList(uname);
+        ban = false;
+
+        //todo add review linked list finder/loader
+        //todo add location finder/loader
+    }
+    Profile(String username, String password, String firstName, String lastName,  String email, String city, String state){
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.city = city;
+        this.state = state;
         //this.reviews = new ReviewList(uname);
         ban = false;
 
@@ -36,154 +67,105 @@ class Profile {
         //todo add location finder/loader
     }
 
-    //getters
+    //getters and setters
+    @XmlAttribute
     String getUsername() {
         return username;
     }
+    void setUsername(String username) {
+        this.username = username;
+    }
+    @XmlElement
     String getLastName() {
         return lastName;
     }
+    void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    @XmlElement
     String getFirstName() {
         return firstName;
     }
+    void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    @XmlElement
     String getEmail() {
         return email;
     }
-    String getLocation() {
-        return location.toString();
+    void setEmail(String email) {
+        this.email = email;
     }
+    @XmlElement
     String getPassword() {
         return password;
     }
-    private String getWriterOut(){
-        StringBuilder str = new StringBuilder();
-        str.append(this.username);
-        str.append(" ");
-        str.append(this.password);
-        str.append(" ");
-        str.append(this.firstName);
-        str.append(" ");
-        str.append(this.lastName);
-        str.append(" ");
-        str.append(this.email);
-        str.append("\n");
-        return str.toString();
-    }
-
-    //setters
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public void setPassword(String password) {
+    void setPassword(String password) {
         this.password = password;
     }
+    @XmlElement
+    boolean getBan(){
+        return ban;
+    }
+    void setBan(boolean ban) {
+        this.ban = ban;
+    }
+    @XmlElement
+    String getCity(){
+        return city;
+    }
+    void setCity(String city){
+        this.city = city;
+    }
+    @XmlElement
+    String getState(){
+        return state;
+    }
+    void setState(String state){
+        this.state = state;
+    }
+
+
+
+
 
     @Override
     public String toString() {
         return firstName + lastName;
     }
 
-    //old writer and reader
-    static ArrayList readAccounts() {
-        ArrayList<Profile> userAccounts = new ArrayList<>();
-        String fileName = "User\\profiles.txt";
-        try {
-            FileReader fin = new FileReader(fileName);
-            Scanner accountFile = new Scanner(fin);
+    static ProfileList importAccounts() {
+        File file = new File("User\\profiles.xml");
+        ProfileList userAccounts = new ProfileList();
 
-            String line;
-            while (accountFile.hasNextLine()) {
-                line = accountFile.nextLine();
-                StringTokenizer st = new StringTokenizer(line);
-
-                try {
-                    if (st.countTokens() != 5) {
-                        System.err.println("Skipping ill-formatted line " + line);
-                        continue;
-                    }
-                    String user = st.nextToken();
-                    String password = st.nextToken();
-                    String firstName = st.nextToken();
-                    String lastName = st.nextToken();
-                    String email = st.nextToken();
-
-                    Profile pfile = new Profile(user, password, firstName, lastName, email);
-                    userAccounts.add(pfile);
-                } catch (NumberFormatException e) {
-                    System.err.println("Skipping ill-formatted line " + line);
-                }
-            }
-        }catch (IOException e) {
-            System.err.println(e);
-            return null;
-        }
-        return userAccounts;
-    }
-    static void writeAccounts(ArrayList<Profile>  prof){
         try{
-            FileWriter fout = new FileWriter("User\\profiles.txt");
-            Iterator<Profile> iter = prof.iterator();
-            while(iter.hasNext()){
-                Profile pro = iter.next();
-                fout.write(pro.getWriterOut());
-            }
-            fout.flush();
-            fout.close();
-        }catch(IOException e) {
-            System.err.println(e);
+            JAXBContext jaxbContext = JAXBContext.newInstance(ProfileList.class);
+            Unmarshaller jaxbUnMarshaller = jaxbContext.createUnmarshaller();
+
+            userAccounts = (ProfileList)jaxbUnMarshaller.unmarshal(file);
+
+        }catch (JAXBException e){
+            System.out.println(e);
         }
-
-    }
-
-    //xml writer and reader
-    static HashMap<String, Profile> readAccountsXML(){
-        HashMap<String, Profile> userAccounts = new HashMap<>();
-
-
-
-
 
         return userAccounts;
     }
-}
 
 
-class Location{
-    private String city;
-    private String state;
+    //todo add profileHash object to handle the profile creation and such.
+    static void exportAccount( ProfileList profiles){
+        File file = new File("User\\profiles.xml");
 
-    Location(String city, String state){
-        this.city = city;
-        this.state = state;
-    }
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(ProfileList.class);
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-    //getters
-    public String getCity() {
-        return city;
-    }
-    public String getState() {
-        return state;
-    }
+            jaxbMarshaller.marshal(profiles, file);
 
-    //setters
-    public void setCity(String city) {
-        this.city = city;
-    }
-    public void setState(String state) {
-        this.state = state;
-    }
 
-    @Override
-    public String toString() {
-        return city + ", " + state;
+        }catch (JAXBException e){
+            System.out.println(e);
+        }
     }
 }

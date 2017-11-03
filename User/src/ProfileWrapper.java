@@ -1,3 +1,9 @@
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.ArrayList;
+import java.util.List;
+
 class ProfileWrapper {
     private Profile profile;
 
@@ -49,9 +55,16 @@ class ProfileWrapper {
             return "null";
         }
     }
-    String getLocation(){
+    String getCity(){
         if(this.profile != null){
-            return this.profile.getLocation();
+            return this.profile.getCity();
+        }else{
+            return "null";
+        }
+    }
+    String getState(){
+        if(this.profile != null){
+            return this.profile.getState();
         }else{
             return "null";
         }
@@ -78,3 +91,16 @@ class ProfileWrapper {
         this.profile.setPassword(password);
     }
 }
+
+@XmlRootElement
+@XmlSeeAlso(Profile.class)
+class ProfileList extends ArrayList<Profile> {
+    public ProfileList(){}
+
+    @XmlElement
+    public List<Profile> getEmployee(){
+        return this;
+    }
+}
+
+

@@ -8,12 +8,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 
 public class UserMain extends Application{
-    private Scene startScene, signUpScene, signInScene, newProfileScene, viewProfileScene, editProfileScene, reviewsScene;
+    private Scene startScene, signUpScene, signInScene, newProfileScene, viewProfileScene, editProfileScene, searchScene, reviewsScene;
 
     public static void Usermain(String[] args) {
         launch(args);
@@ -21,7 +18,7 @@ public class UserMain extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ArrayList profiles = Profile.readAccounts();
+        ProfileList profiles = Profile.importAccounts();
         ProfileWrapper user = new ProfileWrapper();
         final int WIDTH = 800;
         final int HEIGHT = 500;
@@ -175,6 +172,7 @@ public class UserMain extends Application{
     //set user
 
     //checks for matching password
+    //todo change to  profile class method
     private boolean checkPassword(String password1, String password2){
         return password1.equals(password2);
     }
@@ -184,12 +182,13 @@ public class UserMain extends Application{
         return true;
     }
     //checks if user names match
+    //todo change to  profile class method
     private boolean checkUsername(String username1, String username2){
         return username1.equalsIgnoreCase(username2);
     }
 
     //checks if an account credentials match an existing account
-    private Profile checkAccount(String username, String password, ArrayList<Profile> profiles){
+    private Profile checkAccount(String username, String password, ProfileList profiles){
         //todo add try, catch & exception block.
         for (Profile prof : profiles) {
             if (checkUsername(prof.getUsername(), username) && checkPassword(prof.getPassword(), password)) {
@@ -211,8 +210,8 @@ public class UserMain extends Application{
     }
 
     //preps for shutdown by saving user profiles
-    private void shutDown(ArrayList<Profile> profiles){
-        Profile.writeAccounts(profiles);
+    private void shutDown(ProfileList profiles){
+        Profile.exportAccount(profiles);
     }
 
     //fills labels arrays
@@ -306,6 +305,6 @@ public class UserMain extends Application{
         labels[1].setText("Your First Name: " + user.getFirstName());
         labels[2].setText("Your Last Name: "+ user.getLastName());
         labels[3].setText("Your Email Address: " + user.getEmail());
-        labels[4].setText("Location: " + user.getLocation());
+        labels[4].setText("Location: " + user.getCity() + ", " + user.getState());
     }
 }
