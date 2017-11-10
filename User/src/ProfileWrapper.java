@@ -1,7 +1,9 @@
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 class ProfileWrapper {
@@ -92,15 +94,14 @@ class ProfileWrapper {
     }
 }
 
-@XmlRootElement
+//@XmlRootElement(name ="Users")
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlSeeAlso(Profile.class)
-class ProfileList extends ArrayList<Profile> {
-    public ProfileList(){}
+class ProfileHash extends HashMap<String, Profile>{
+    public ProfileHash(){}
 
     @XmlElement
-    public List<Profile> getEmployee(){
-        return this;
+    public List<Profile> getAccounts(){
+        return new ArrayList<>(this.values());
     }
 }
-
-

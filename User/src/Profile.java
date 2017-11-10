@@ -22,10 +22,9 @@ class Profile {
     private String firstName;
     private String lastName;
     private String email;
-    private ReviewList reviews;
     private String city;
     private String state;
-    private boolean ban; // false is default
+    private boolean banned; // false is default
 
     //constructor
     Profile(){
@@ -34,7 +33,7 @@ class Profile {
         firstName = null;
         lastName = null;
         email = null;
-        ban = true;
+        banned = true;
         city = null;
         state = null;
     }
@@ -46,25 +45,10 @@ class Profile {
         this.email = email;
         city = "greensboro";
         state = "North Carolina";
-        //this.reviews = new ReviewList(uname);
-        ban = false;
+        banned = false;
+//        reviews = null;
 
-        //todo add review linked list finder/loader
-        //todo add location finder/loader
-    }
-    Profile(String username, String password, String firstName, String lastName,  String email, String city, String state){
-        this.username = username;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.city = city;
-        this.state = state;
-        //this.reviews = new ReviewList(uname);
-        ban = false;
-
-        //todo add review linked list finder/loader
-        //todo add location finder/loader
+        //todo add reviews
     }
 
     //getters and setters
@@ -75,6 +59,7 @@ class Profile {
     void setUsername(String username) {
         this.username = username;
     }
+
     @XmlElement
     String getLastName() {
         return lastName;
@@ -82,6 +67,7 @@ class Profile {
     void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
     @XmlElement
     String getFirstName() {
         return firstName;
@@ -89,6 +75,7 @@ class Profile {
     void setFirstName(String firstName) {
         this.firstName = firstName;
     }
+
     @XmlElement
     String getEmail() {
         return email;
@@ -96,6 +83,7 @@ class Profile {
     void setEmail(String email) {
         this.email = email;
     }
+
     @XmlElement
     String getPassword() {
         return password;
@@ -103,13 +91,15 @@ class Profile {
     void setPassword(String password) {
         this.password = password;
     }
+
     @XmlElement
     boolean getBan(){
-        return ban;
+        return banned;
     }
-    void setBan(boolean ban) {
-        this.ban = ban;
+    void setban(boolean banned) {
+        this.banned = banned;
     }
+
     @XmlElement
     String getCity(){
         return city;
@@ -117,6 +107,7 @@ class Profile {
     void setCity(String city){
         this.city = city;
     }
+
     @XmlElement
     String getState(){
         return state;
@@ -125,47 +116,64 @@ class Profile {
         this.state = state;
     }
 
+//    @XmlElement
+//    ReviewList getReviews(){
+//        return reviews;
+//    }
+//    public void setReviews(ReviewList reviews) {
+//        this.reviews = reviews;
+//    }
 
-
-
+    //returns the users ban status
+    boolean isBanned(){
+        return banned;
+    }
+    //check to see if the string matches the profiles password
+    boolean passwordCheck(String pass){
+        return password.equals(pass);
+    }
+    //checks if string matches the profiles username
+    boolean usernameCheck(String user){
+        return username.equalsIgnoreCase(user);
+    }
+    //adds a review to list
+//    void addReview(Review review){
+//        reviews.add(review);
+//    }
 
     @Override
     public String toString() {
         return firstName + lastName;
     }
 
-    static ProfileList importAccounts() {
+    //imports profiles from into an array list from an xml file name profiles.xml
+    static ProfileHash importAccounts() {
         File file = new File("User\\profiles.xml");
-        ProfileList userAccounts = new ProfileList();
+        ProfileHash userAccounts = new ProfileHash();
 
         try{
-            JAXBContext jaxbContext = JAXBContext.newInstance(ProfileList.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(ProfileHash.class);
             Unmarshaller jaxbUnMarshaller = jaxbContext.createUnmarshaller();
-
-            userAccounts = (ProfileList)jaxbUnMarshaller.unmarshal(file);
-
+            userAccounts = (ProfileHash)jaxbUnMarshaller.unmarshal(file);
         }catch (JAXBException e){
-            System.out.println(e);
-        }
-
+            e.printStackTrace();
+            }
+        System.out.println(userAccounts.toString());
         return userAccounts;
     }
 
-
-    //todo add profileHash object to handle the profile creation and such.
-    static void exportAccount( ProfileList profiles){
+    //exports an array list of profiles to an xml file named profiles.xml
+    static void exportAccount( ProfileHash profiles){
         File file = new File("User\\profiles.xml");
 
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(ProfileList.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(ProfileHash.class);
             Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
             jaxbMarshaller.marshal(profiles, file);
-
-
         }catch (JAXBException e){
             System.out.println(e);
         }
+        System.out.println(profiles.toString());
     }
 }

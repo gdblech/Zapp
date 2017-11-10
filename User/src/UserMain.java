@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -10,21 +11,19 @@ import javafx.stage.Stage;
 
 
 public class UserMain extends Application{
-    private Scene startScene, signUpScene, signInScene, newProfileScene, viewProfileScene, editProfileScene, searchScene, reviewsScene;
-
-    public static void Usermain(String[] args) {
-        launch(args);
-    }
+    private Scene startScene, signUpScene, signInScene, newProfileScene, viewProfileScene, editProfileScene,
+            searchScene, providerScene;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ProfileList profiles = Profile.importAccounts();
+        ProfileHash profiles = Profile.importAccounts();
+        //PriorityQueue providers = new PriorityQueue<Provider>(); todo add provider class from group
         ProfileWrapper user = new ProfileWrapper();
         final int WIDTH = 800;
         final int HEIGHT = 500;
 
         //labels
-        Label[] labelsST, labelsSU, labelsSI, labelsVP, labelsEP, labelsNP, labelsRS;
+        Label[] labelsST, labelsSU, labelsSI, labelsVP, labelsEP, labelsNP, labelsSS, labelsPS;
         //start stage labels
         labelsST = labelFillST();
         //Sign up stage labels
@@ -37,14 +36,15 @@ public class UserMain extends Application{
         labelsEP = labelFillEP();
         //New Profile Labels
         labelsNP = labelFillNP();
-        //Review scene labels
-        labelsRS = labelFillRS();
-        Label labelRS1 = new Label("Rating: ");
-        Label labelRS2 = new Label();
+        //Search scene labels
+        labelsSS = labelFillSS(5);//temp as 5, todo add drop down for number of displayed providers
+        //provider scene labels
+        labelsPS = labelFillPS();
+
 
         //TextFields
         //todo field arrays
-        TextField[] textFieldsSU, textFieldsSI, textFieldsEP, textFieldsNP;
+        TextField[] textFieldsEP, textFieldsNP;
         PasswordField passSU, passSU1,  passSI;
         //New Profile TextFields
         textFieldsNP = textFieldsFillNP();
@@ -82,17 +82,34 @@ public class UserMain extends Application{
         //Sign Up button events
         backSU.setOnAction(e -> primaryStage.setScene(startScene));
         enterSU.setOnAction(e-> {
-            //todo replace with try block
-            primaryStage.setScene(newProfileScene);
+            String pass1 = passSU.getText();
+            String pass2 = passSU1.getText();
+            if(userSU.getText().isEmpty()){
+                AlertBox.display("A User Name is Required");
+            }else if(profiles.containsKey(userSU.getText())){
+                AlertBox.display("Username in Use, Please Choose Another.");
+            }else if(!pass1.equals(pass2)){
+                AlertBox.display("Passwords do not match");
+            }else {
+                primaryStage.setScene(newProfileScene);
+            }
         });
         //sing in button events
         backSI.setOnAction(e -> primaryStage.setScene(startScene));
         enterSI.setOnAction(e-> {
-            user.setProfile(checkAccount(userSI.getText(), passSI.getText(), profiles));
-            if(user.getProfile() == null){
+            String username = userSI.getText();
+            String password =  passSI.getText();
+
+            if(profiles.containsKey(username)){
+                if(profiles.get(username).passwordCheck(password)){
+                    user.setProfile(profiles.get(username));
+                    UpdateVP(labelsVP, user.getProfile());
+                    primaryStage.setScene(viewProfileScene);
+                }else{
+                    AlertBox.display("Incorrect Username Or Password");
+                }
             }else{
-                UpdateVP(labelsVP, user.getProfile());
-                primaryStage.setScene(viewProfileScene);
+                AlertBox.display("Incorrect Username Or Password");
             }
         });
         //profile view Button Events
@@ -100,17 +117,16 @@ public class UserMain extends Application{
             UpdateEP(textFieldsEP, user.getProfile());
             primaryStage.setScene(editProfileScene);
         });
-        searchVP.setOnAction(e -> primaryStage.setScene(reviewsScene));
+        searchVP.setOnAction(e -> primaryStage.setScene(searchScene));
         //new profile Button Events
         enterNP.setOnAction(e -> {
             Profile nUser = createProfile(userSU.getText(), passSU1.getText(), textFieldsNP[0].getText(),
                     textFieldsNP[1].getText(), textFieldsNP[2].getText());
-            if(nUser != null){
-                profiles.add(nUser);
-                user.setProfile(nUser);
-                UpdateVP(labelsVP, nUser);
-                primaryStage.setScene(viewProfileScene);
-            }
+
+            profiles.put(nUser.getUsername(), nUser);
+            user.setProfile(nUser);
+            UpdateVP(labelsVP, nUser);
+            primaryStage.setScene(viewProfileScene);
         });
         //edit profile Button Events
         enterEP.setOnAction(e -> {
@@ -144,8 +160,8 @@ public class UserMain extends Application{
 
         //populates the viewProfileScene
         VBox layoutVP = new VBox(20);
-        for(int i = 0; i < labelsVP.length; i++ ){
-            layoutVP.getChildren().add(labelsVP[i]);
+        for (Label label : labelsVP) {
+            layoutVP.getChildren().add(label);
         }
         layoutVP.getChildren().addAll(editVP, searchVP);
         viewProfileScene = new Scene(layoutVP, WIDTH, HEIGHT);
@@ -158,6 +174,17 @@ public class UserMain extends Application{
         layoutEP.getChildren().add(enterEP);
         editProfileScene = new Scene(layoutEP, WIDTH, HEIGHT);
 
+        //populates the searchScene
+        VBox layoutSS = new VBox(20);
+        layoutSS.setAlignment(Pos.CENTER);
+        for(Label label : labelsSS ){
+            layoutSS.getChildren().add(label);
+        }
+        searchScene = new Scene(layoutSS, WIDTH, HEIGHT);
+
+        //populates provider scene todo
+
+
         //primary
         primaryStage.setScene(startScene);
         primaryStage.setTitle("Zapp: Fast Electrician Finder");
@@ -169,34 +196,13 @@ public class UserMain extends Application{
 
 
     }
-    //set user
 
-    //checks for matching password
-    //todo change to  profile class method
-    private boolean checkPassword(String password1, String password2){
-        return password1.equals(password2);
-    }
-    //checks if email is in correct format
+   //checks if email is in correct format
     private boolean checkEmail(String email){
         //todo add regex for email checking
         return true;
     }
-    //checks if user names match
-    //todo change to  profile class method
-    private boolean checkUsername(String username1, String username2){
-        return username1.equalsIgnoreCase(username2);
-    }
 
-    //checks if an account credentials match an existing account
-    private Profile checkAccount(String username, String password, ProfileList profiles){
-        //todo add try, catch & exception block.
-        for (Profile prof : profiles) {
-            if (checkUsername(prof.getUsername(), username) && checkPassword(prof.getPassword(), password)) {
-                return prof;
-            }
-        }
-        return null;
-    }
     //changes profile
     private void editProfile(String firstName, String lastName, String email, Profile profile){
         profile.setFirstName(firstName);
@@ -210,7 +216,7 @@ public class UserMain extends Application{
     }
 
     //preps for shutdown by saving user profiles
-    private void shutDown(ProfileList profiles){
+    private void shutDown(ProfileHash profiles){
         Profile.exportAccount(profiles);
     }
 
@@ -251,10 +257,11 @@ public class UserMain extends Application{
         labels[4] = new Label("Enter your State");
         return labels;
     }
-    private Label[] labelFillRS(){
-        //Label[] labels = new Label[2];
+    private Label[] labelFillPS(){
+        Label[] labels = new Label[1];
+        labels[0] = new Label("Temp");
         //todo add labels
-        return null;
+        return labels;
     }
     private Label[] labelFillEP(){
         Label[] labels = new Label[5];
@@ -265,7 +272,17 @@ public class UserMain extends Application{
         labels[4] = new Label("Enter your New State");
         return labels;
     }
-
+    private Label[] labelFillSS(int quantity){
+        //todo add provider support will be a priority queue based on rating
+        Label[] labels = new Label[4*quantity];
+        for(int i = 0; i+3 < labels.length; i = i+4){
+            labels[i] = new Label("Provider: ");
+            labels[i+1] = new Label("Hours: " );
+            labels[i+2] = new Label("Rating: ");
+            labels[i+3] = new Label("Availability: ");
+        }
+        return labels;
+    }
     //fills text field arrays
     private TextField[] textFieldsFillNP(){
         TextField[] textFields = new TextField[5];
