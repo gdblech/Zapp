@@ -9,6 +9,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
+
 
 public class UserMain extends Application{
     private Scene startScene, signUpScene, signInScene, newProfileScene, viewProfileScene, editProfileScene,
@@ -16,9 +18,9 @@ public class UserMain extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ProfileHash profiles = Profile.importAccounts();
+        HashMap<String, User> users = importAccounts();
         //PriorityQueue providers = new PriorityQueue<Provider>(); todo add provider class from group
-        ProfileWrapper user = new ProfileWrapper();
+        UserWrapper user = new UserWrapper();
         final int WIDTH = 800;
         final int HEIGHT = 500;
 
@@ -34,7 +36,7 @@ public class UserMain extends Application{
         labelsVP = labelFillVP();
         // Edit profile Labels
         labelsEP = labelFillEP();
-        //New Profile Labels
+        //New User Labels
         labelsNP = labelFillNP();
         //Search scene labels
         labelsSS = labelFillSS(5);//temp as 5, todo add drop down for number of displayed providers
@@ -46,7 +48,7 @@ public class UserMain extends Application{
         //todo field arrays
         TextField[] textFieldsEP, textFieldsNP;
         PasswordField passSU, passSU1,  passSI;
-        //New Profile TextFields
+        //New User TextFields
         textFieldsNP = textFieldsFillNP();
         //sign up TextFields
         TextField userSU = new TextField();
@@ -68,7 +70,7 @@ public class UserMain extends Application{
         //Sign in buttons
         Button backSI = new Button("Back");
         Button enterSI = new Button("Enter");
-        //Profile View Buttons
+        //User View Buttons
         Button editVP = new Button("Edit");
         Button searchVP = new Button("Search");
         //new profile Buttons
@@ -86,7 +88,7 @@ public class UserMain extends Application{
             String pass2 = passSU1.getText();
             if(userSU.getText().isEmpty()){
                 AlertBox.display("A User Name is Required");
-            }else if(profiles.containsKey(userSU.getText())){
+            }else if(users.containsKey(userSU.getText())){
                 AlertBox.display("Username in Use, Please Choose Another.");
             }else if(!pass1.equals(pass2)){
                 AlertBox.display("Passwords do not match");
@@ -100,10 +102,10 @@ public class UserMain extends Application{
             String username = userSI.getText();
             String password =  passSI.getText();
 
-            if(profiles.containsKey(username)){
-                if(profiles.get(username).passwordCheck(password)){
-                    user.setProfile(profiles.get(username));
-                    UpdateVP(labelsVP, user.getProfile());
+            if(users.containsKey(username)){
+                if(users.get(username).passwordCheck(password)){
+                    user.setUser(users.get(username));
+                    UpdateVP(labelsVP, user.getUser());
                     primaryStage.setScene(viewProfileScene);
                 }else{
                     AlertBox.display("Incorrect Username Or Password");
@@ -114,24 +116,24 @@ public class UserMain extends Application{
         });
         //profile view Button Events
         editVP.setOnAction(e -> {
-            UpdateEP(textFieldsEP, user.getProfile());
+            UpdateEP(textFieldsEP, user.getUser());
             primaryStage.setScene(editProfileScene);
         });
         searchVP.setOnAction(e -> primaryStage.setScene(searchScene));
         //new profile Button Events
         enterNP.setOnAction(e -> {
-            Profile nUser = createProfile(userSU.getText(), passSU1.getText(), textFieldsNP[0].getText(),
+            User nUser = createProfile(userSU.getText(), passSU1.getText(), textFieldsNP[0].getText(),
                     textFieldsNP[1].getText(), textFieldsNP[2].getText());
 
-            profiles.put(nUser.getUsername(), nUser);
-            user.setProfile(nUser);
+            users.put(nUser.getUsername(), nUser);
+            user.setUser(nUser);
             UpdateVP(labelsVP, nUser);
             primaryStage.setScene(viewProfileScene);
         });
         //edit profile Button Events
         enterEP.setOnAction(e -> {
-            editProfile(textFieldsEP[0].getText(), textFieldsEP[1].getText(), textFieldsEP[2].getText(), user.getProfile());
-            UpdateVP(labelsVP, user.getProfile());
+            editProfile(textFieldsEP[0].getText(), textFieldsEP[1].getText(), textFieldsEP[2].getText(), user.getUser());
+            UpdateVP(labelsVP, user.getUser());
             primaryStage.setScene(viewProfileScene);
         });
 
@@ -189,7 +191,7 @@ public class UserMain extends Application{
         primaryStage.setScene(startScene);
         primaryStage.setTitle("Zapp: Fast Electrician Finder");
         primaryStage.setOnCloseRequest(event -> {
-            shutDown(profiles);
+            shutDown(users);
             System.exit(0);
         });
         primaryStage.show();
@@ -203,21 +205,23 @@ public class UserMain extends Application{
         return true;
     }
 
-    //changes profile
-    private void editProfile(String firstName, String lastName, String email, Profile profile){
-        profile.setFirstName(firstName);
-        profile.setLastName(lastName);
-        profile.setEmail(email);
+    //changes user
+    private void editProfile(String firstName, String lastName, String email, User user){
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
     }
     //creates a new profile
-    private Profile createProfile(String username, String password, String firstName, String lastName, String email){
-        return new Profile(username, password, firstName, lastName, email);
+    private User createProfile(String username, String password, String firstName, String lastName, String email){
+        return new User(username, password, firstName, lastName, email);
         //todo investigate why this is here.
     }
 
     //preps for shutdown by saving user profiles
-    private void shutDown(ProfileHash profiles){
-        Profile.exportAccount(profiles);
+    private void shutDown(HashMap users){
+        UserList temp = new UserList();
+        temp.addAll(users.values());
+        User.exportAccount(temp);
     }
 
     //fills labels arrays
@@ -240,21 +244,18 @@ public class UserMain extends Application{
         return labels;
     }
     private Label[] labelFillVP(){
-        Label[] labels = new Label[5];
+        Label[] labels = new Label[4];
         labels[0] = new Label("Welcome, Null");
         labels[1] = new Label("Your First Name: Null");
         labels[2] = new Label("Your Last Name: Null");
         labels[3] = new Label("Your Email Address: Null");
-        labels[4] = new Label("Location: Null");
         return labels;
     }
     private Label[] labelFillNP(){
-        Label[] labels = new Label[5];
+        Label[] labels = new Label[3];
         labels[0] = new Label("Enter your First Name:");
         labels[1]= new Label("Enter your Last Name:");
         labels[2] = new Label("Enter your Email Address:");
-        labels[3] = new Label("Enter your City");
-        labels[4] = new Label("Enter your State");
         return labels;
     }
     private Label[] labelFillPS(){
@@ -264,12 +265,10 @@ public class UserMain extends Application{
         return labels;
     }
     private Label[] labelFillEP(){
-        Label[] labels = new Label[5];
+        Label[] labels = new Label[3];
         labels[0] = new Label("Enter your New First Name:");
         labels[1] = new Label("Enter your New Last Name:");
         labels[2] = new Label("Enter your New Email Address:");
-        labels[3] = new Label("Enter your New City");
-        labels[4] = new Label("Enter your New State");
         return labels;
     }
     private Label[] labelFillSS(int quantity){
@@ -285,43 +284,41 @@ public class UserMain extends Application{
     }
     //fills text field arrays
     private TextField[] textFieldsFillNP(){
-        TextField[] textFields = new TextField[5];
+        TextField[] textFields = new TextField[3];
 
         textFields[0] = new TextField();
         textFields[1] = new TextField();
         textFields[2] = new TextField();
-        textFields[3] = new TextField("Greensboro");
-        textFields[4] = new TextField("North Carolina");
-        textFields[3].setEditable(false);
-        textFields[4].setEditable(false);
         return textFields;
     }
-    private TextField[] textFieldFillEP(ProfileWrapper user){
-        TextField[] textFields = new TextField[5];
+    private TextField[] textFieldFillEP(UserWrapper user){
+        TextField[] textFields = new TextField[3];
         textFields[0] = new TextField(user.getFirstName());
         textFields[1] = new TextField(user.getLastName());
         textFields[2] = new TextField(user.getEmail());
-        textFields[3] = new TextField("Greensboro");
-        textFields[4] = new TextField("North Carolina");
-        //Text Fields
-        textFields[3].setEditable(false);
-        textFields[4].setEditable(false);
 
         return textFields;
     }
 
-    private void UpdateEP( TextField[] textFields, Profile user){
+    private void UpdateEP( TextField[] textFields, User user){
         textFields[0].setText(user.getFirstName());
         textFields[1].setText(user.getLastName());
         textFields[2].setText(user.getEmail());
-        textFields[3].setText("Greensboro");
-        textFields[4].setText("North Carolina");
     }
-    private void UpdateVP(Label[] labels, Profile user){
+
+    private void UpdateVP(Label[] labels, User user){
         labels[0].setText("Welcome, " + user.getUsername());
         labels[1].setText("Your First Name: " + user.getFirstName());
         labels[2].setText("Your Last Name: "+ user.getLastName());
         labels[3].setText("Your Email Address: " + user.getEmail());
-        labels[4].setText("Location: " + user.getCity() + ", " + user.getState());
+    }
+
+    private HashMap<String, User> importAccounts(){
+        HashMap<String, User> users = new HashMap<>();
+        UserList usersL = User.importAccounts();
+        for(User user : usersL){
+            users.put(user.getUsername(), user);
+        }
+        return users;
     }
 }

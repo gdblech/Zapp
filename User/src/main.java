@@ -5,11 +5,11 @@
     @version 2.0
 
  */
+
 import javafx.application.Application;
 
 public class main {
     public static void main(String[] args) {
-        //new UserMain(args);
         Application.launch(UserMain.class, args);
     }
 }
