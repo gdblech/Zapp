@@ -1,8 +1,3 @@
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import java.util.ArrayList;
-import java.util.List;
 
 class UserWrapper {
     private User user;
@@ -78,13 +73,4 @@ class UserWrapper {
     }
 }
 
-@XmlRootElement
-@XmlSeeAlso(User.class)
-class UserList extends ArrayList<User> {
-    public UserList(){}
 
-    @XmlElement
-    public List<User> getAccounts(){
-        return this;
-    }
-}

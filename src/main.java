@@ -1,3 +1,4 @@
+
 /*
     Zapp is an application for finding an electrician. Built for CSC 340 at UNCG
 
@@ -5,12 +6,10 @@
     @version 2.0
 
  */
-
 import javafx.application.Application;
 
-public class main {
+public class Main {
     public static void main(String[] args) {
-        Application.launch(UserMain.class, args);
-        //Application.launch(ElectricMain.claSS, args);
+        Application.launch(Landing.class, args);
     }
 }

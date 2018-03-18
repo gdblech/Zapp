@@ -1,16 +1,9 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.File;
+import java.util.ArrayList;
 
-@XmlRootElement
-class User {
+
+public class User {
     private String username;
     private String password;
     private String firstName;
@@ -19,150 +12,74 @@ class User {
     private boolean banned;
     private boolean provider;
     private boolean admin;
+    private ArrayList<Comments> reviews;
 
-    //constructor
-    User(){
-        username = null;
-        password = null;
-        firstName = null;
-        lastName = null;
-        email = null;
-        banned = false;
-        provider = false;
-        admin = false;
-    }
-    //getters and setters
-    @XmlElement
-    String getUsername() {
-        return username;
-    }
-    void setUsername(String username) {
+    User(){}
+    User(String username, String password, String firstName, String lastName, String email, Boolean provider, Boolean banned){
         this.username = username;
-    }
-
-    @XmlElement
-    String getLastName() {
-        return lastName;
-    }
-    void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    @XmlElement
-    String getFirstName() {
-        return firstName;
-    }
-    void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    @XmlElement
-    String getEmail() {
-        return email;
-    }
-    void setEmail(String email) {
-        this.email = email;
-    }
-
-    @XmlElement
-    String getPassword() {
-        return password;
-    }
-    void setPassword(String password) {
         this.password = password;
-    }
-
-    @XmlAttribute
-    Boolean getBanned(){
-        return banned;
-    }
-    void setBanned(boolean banned){
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
         this.banned = banned;
-    }
-
-    @XmlElement
-    boolean getProvider(){return provider;}
-    void setProvider(boolean provider) {
         this.provider = provider;
+        this.admin = false;
+        this.reviews = null;
     }
 
-    @XmlElement
-    boolean getAdmin(){return admin;}
+    @XmlElement(name="username")
+    public String getUsername() { return this.username; }
+
+    public void setUsername(String username) { this.username = username; }
+
+    @XmlElement(name="password")
+    public String getPassword() { return this.password; }
+
+    public void setPassword(String password) { this.password = password; }
+
+    @XmlElement(name="firstName")
+    public String getFirstName() { return this.firstName; }
+
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    @XmlElement(name="lastName")
+    public String getLastName() { return this.lastName; }
+
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    @XmlElement(name="email")
+    public String getEmail() { return this.email; }
+
+    public void setEmail(String email) { this.email = email; }
+
+    @XmlElement(name="banned")
+    public boolean getBanned() { return this.banned; }
+
+    public void setBanned(boolean banned) { this.banned = banned; }
+
+    @XmlElement(name="provider")
+    public boolean getProvider() { return this.provider; }
+
+    public void setProvider(boolean provider) { this.provider = provider; }
+
+    @XmlElement(name="admin")
+    public boolean getAdmin() { return this.admin; }
     void setAdmin(boolean admin){
         this.admin = admin;
     }
 
-    //returns the users ban status
-    boolean isBanned(){
-        return banned;
+    @XmlElement(name = "reviews")
+    public ArrayList<Comments> getReviews(){
+        return this.reviews;
     }
-    //check to see if the string matches the profiles password
-    boolean passwordCheck(String pass){
-        return password.equals(pass);
-    }
-    //checks if string matches the profiles username
-    boolean usernameCheck(String user){
-        return username.equalsIgnoreCase(user);
+    public void setReview(ArrayList<Comments> reviews){
+        this.reviews = reviews;
     }
 
-    @Override
-    public String toString() {
-        return firstName + lastName;
-    }
-
-    //imports profiles from into an array list from an xml file name profiles.xml
-
-    static UserList importAccounts() {
-        File file = new File("User\\profiles.xml");
-        UserList userAccounts = new UserList();
-
-        try{
-            JAXBContext jaxbContext = JAXBContext.newInstance(UserList.class);
-            Unmarshaller jaxbUnMarshaller = jaxbContext.createUnmarshaller();
-            userAccounts = (UserList)jaxbUnMarshaller.unmarshal(file);
-        }catch (JAXBException e){
-            e.printStackTrace();
+    public void addReview(String text, String username){
+        if(this.reviews == null){
+            this.reviews = new ArrayList<Comments>();
         }
-        return userAccounts;
+        this.reviews.add(new Comments(text, username));
     }
 }
-
-
-
-/*
-package sample;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.*;
-import java.io.File;
-import java.util.ArrayList;
-
-class User {
-}
-
-
-
-    // Change the given username's password
-    // public boolean changePassword(String username, String password) {
-    //     for (int i = 0; i < this.data.users.size(); i++) {
-    //         if (this.data.users.get(i).getUsername().equals(username)) {
-    //             this.data.users.get(i).setPassword(password);
-    //             return true;
-    //         }
-    //     }
-
-    //     return false;
-    // }
-
-    // TODO: changeEmail()
-
-    // TODO: changeBanned()
-
-    // TODO: changeProvider()
-
-    // TODO: changeAdmin() -- probably not
-}
-
- */
