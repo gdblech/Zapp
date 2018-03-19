@@ -1,4 +1,3 @@
-
 class UserWrapper {
     private User user;
 
